@@ -1,0 +1,58 @@
+<div class="success-container">
+    <div class="success-card">
+        <!-- Success Icon -->
+        <div class="success-icon">
+            <mat-icon>check_circle</mat-icon>
+        </div>
+
+        <!-- Title -->
+        <h1 class="success-title">{{ t.orderPlacedSuccess }}</h1>
+        <p class="success-subtitle">{{ t.mealBeingPrepared }}</p>
+
+        <!-- Payment Badge -->
+        <div class="payment-badge">
+            {{ t.payCashAtCounter }}
+        </div>
+
+        <!-- Queue Number Section -->
+        <div class="queue-section">
+            <p class="queue-label">{{ t.yourQueueNumber }}</p>
+            <h2 class="queue-number">{{ orderNumber }}</h2>
+
+            <div class="order-details">
+                <div class="detail-item">
+                    <span class="label">{{ t.dateLabel }}</span>
+                    <span class="value">{{ orderDate }}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="label">{{ t.timeLabel }}</span>
+                    <span class="value">{{ orderTime }}</span>
+                </div>
+            </div>
+
+            <!-- Total Amount -->
+            <div class="total-amount" *ngIf="totalAmount > 0">
+                <span class="total-label">{{ t.totalAmountLabel }}:</span>
+                <span class="total-value">{{ totalAmount }} Đ</span>
+            </div>
+
+            <!-- Warning Notice -->
+            <div class="warning-notice">
+                <mat-icon>info</mat-icon>
+                <span>{{ t.validToday }}</span>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="btn-secondary" (click)="backToMenu()">
+                <mat-icon>arrow_back</mat-icon>
+                {{ t.backToMenu }}
+            </button>
+            <button class="btn-primary" (click)="saveScreenshot()">
+                <mat-icon>screenshot</mat-icon>
+                {{ t.saveScreenshot }}
+            </button>
+        </div>
+    </div>
+</div>

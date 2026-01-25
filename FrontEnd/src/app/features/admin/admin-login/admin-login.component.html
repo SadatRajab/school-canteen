@@ -1,0 +1,93 @@
+<div class="login-wrapper">
+    <!-- Top Navigation Bar -->
+    <header class="top-header">
+        <div class="header-left">
+            <img src="assets/images/school-logo.png" alt="School Logo" class="logo-image">
+            <h2 class="app-title">{{ t.appName }}</h2>
+        </div>
+        <div class="header-right">
+            <button mat-raised-button class="lang-toggle" (click)="toggleLanguage()">
+                <span>{{ currentLang === 'ar' ? 'AR' : 'EN' }}</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Login Content -->
+    <main class="login-container">
+        <div class="login-content">
+            <!-- Headline -->
+            <div class="login-headline">
+                <h1 *ngIf="currentLang === 'en'">{{ t.adminLogin }}</h1>
+                <h1 *ngIf="currentLang === 'ar'" class="ar-title">تسجيل دخول الأدمن</h1>
+            </div>
+
+            <!-- Login Card -->
+            <div class="login-card">
+                <!-- Image Header -->
+                <div class="card-header">
+                    <div class="logo-circle">
+                        <mat-icon class="logo-icon-large">school</mat-icon>
+                    </div>
+                </div>
+
+                <!-- Card Body -->
+                <div class="card-body">
+                    <!-- Welcome Text -->
+                    <div class="welcome-text">
+                        <p class="welcome-title">{{ t.welcomeBack }}</p>
+                        <p class="welcome-subtitle">{{ t.enterCredentials }}</p>
+                    </div>
+
+                    <!-- Login Form -->
+                    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+                        <!-- Email Field -->
+                        <div class="form-group">
+                            <label class="form-label">
+                                <span *ngIf="currentLang === 'en'">{{ t.email }}</span>
+                                <span *ngIf="currentLang === 'ar'">{{ t.emailAr }}</span>
+                            </label>
+                            <input class="form-input" type="email" formControlName="email"
+                                placeholder="admin@school.com" />
+                            <p class="error-message"
+                                *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
+                                <span *ngIf="currentLang === 'en'">{{ t.emailRequired }}</span>
+                                <span *ngIf="currentLang === 'ar'">البريد الإلكتروني مطلوب</span>
+                            </p>
+                        </div>
+
+                        <!-- Password Field -->
+                        <div class="form-group">
+                            <label class="form-label">
+                                <span *ngIf="currentLang === 'en'">{{ t.password }}</span>
+                                <span *ngIf="currentLang === 'ar'">{{ t.passwordAr }}</span>
+                            </label>
+                            <div class="input-group" [class.error]="showPasswordError">
+                                <input class="form-input grouped" [type]="hidePassword ? 'password' : 'text'"
+                                    formControlName="password" placeholder="••••••••" />
+                                <button type="button" class="input-suffix" (click)="hidePassword = !hidePassword">
+                                    <mat-icon>{{ hidePassword ? 'visibility_off' : 'visibility' }}</mat-icon>
+                                </button>
+                            </div>
+                            <p class="error-message" *ngIf="showPasswordError">
+                                <span *ngIf="currentLang === 'en'">{{ t.invalidPassword }}</span>
+                                <span *ngIf="currentLang === 'ar'">{{ t.invalidPasswordAr }}</span>
+                            </p>
+                        </div>
+
+                        <!-- Forgot Password Link -->
+                        <div class="forgot-password">
+                            <a href="#">{{ t.forgotPassword }}</a>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button mat-raised-button class="submit-btn" type="submit"
+                            [disabled]="loading || loginForm.invalid">
+                            <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+                            <span *ngIf="!loading">{{ t.loginButton }}</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>

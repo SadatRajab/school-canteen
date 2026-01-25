@@ -1,0 +1,74 @@
+<h2 mat-dialog-title>
+    {{ isEditMode ? t.editProduct : t.addProduct }}
+</h2>
+
+<mat-dialog-content>
+    <form [formGroup]="productForm">
+        <div class="image-upload-section">
+            <div class="upload-area" (click)="fileInput.click()" [class.has-image]="imagePreview">
+                <input type="file" accept="image/*" (change)="onFileSelected($event)" #fileInput
+                    style="display: none" />
+
+                <div class="preview-container" *ngIf="imagePreview">
+                    <img [src]="imagePreview" alt="Preview" class="image-preview" />
+                    <div class="overlay">
+                        <mat-icon>edit</mat-icon>
+                        <span>{{ t.uploadImage }}</span>
+                    </div>
+                </div>
+
+                <div class="upload-placeholder" *ngIf="!imagePreview">
+                    <mat-icon>add_photo_alternate</mat-icon>
+                    <span>{{ t.uploadImage }}</span>
+                    <small>اضغط لرفع الصورة</small>
+                </div>
+            </div>
+        </div>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t.nameAr }}</mat-label>
+            <input matInput formControlName="nameAr" [placeholder]="t.enterNameAr" />
+            <mat-error *ngIf="productForm.get('nameAr')?.hasError('required')">
+                {{ t.nameRequired }}
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t.nameEn }}</mat-label>
+            <input matInput formControlName="nameEn" [placeholder]="t.enterNameEn" />
+            <mat-error *ngIf="productForm.get('nameEn')?.hasError('required')">
+                {{ t.nameRequired }}
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t.price }}</mat-label>
+            <input matInput type="number" formControlName="price" [placeholder]="t.enterPrice" />
+            <span matSuffix>{{ t.currency }}</span>
+            <mat-error *ngIf="productForm.get('price')?.hasError('required')">
+                {{ t.priceRequired }}
+            </mat-error>
+            <mat-error *ngIf="productForm.get('price')?.hasError('min')">
+                {{ t.priceMin }}
+            </mat-error>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+            <mat-label>{{ t.available }}</mat-label>
+            <mat-select formControlName="isAvailable">
+                <mat-option [value]="true">{{ t.yes }}</mat-option>
+                <mat-option [value]="false">{{ t.no }}</mat-option>
+            </mat-select>
+        </mat-form-field>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button (click)="onCancel()" [disabled]="loading">
+        {{ t.cancel }}
+    </button>
+    <button mat-raised-button color="primary" (click)="onSubmit()" [disabled]="loading || productForm.invalid">
+        <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+        <span *ngIf="!loading">{{ isEditMode ? t.update : t.create }}</span>
+    </button>
+</mat-dialog-actions>

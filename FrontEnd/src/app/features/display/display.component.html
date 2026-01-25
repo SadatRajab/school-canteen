@@ -1,0 +1,33 @@
+<div class="container" [class.tv-mode]="tvMode">
+    <div class="header no-print">
+        <h1>{{ t.todayOrders }}</h1>
+        <button mat-icon-button (click)="toggleTVMode()">
+            <mat-icon>{{ tvMode ? 'fullscreen_exit' : 'fullscreen' }}</mat-icon>
+        </button>
+    </div>
+
+    <div *ngIf="loading" class="loading-container">
+        <mat-spinner></mat-spinner>
+    </div>
+
+    <div *ngIf="!loading" class="orders-grid">
+        <div *ngFor="let order of orders" class="order-card" [ngClass]="getStatusClass(order.status)">
+            <div class="order-header">
+                <div class="status-text">
+                    {{ t[order.status.toLowerCase()] }}
+                </div>
+                <div class="time-text">
+                    <span class="time-value">{{ getTimeAgo(order.createdAt).en }}</span>
+                    <span class="time-ar">{{ getTimeAgo(order.createdAt).ar }}</span>
+                </div>
+            </div>
+
+            <div class="queue-number">#{{ order.orderNumber.toString().padStart(3, '0') }}</div>
+        </div>
+    </div>
+
+    <div *ngIf="orders.length === 0 && !loading" class="no-orders">
+        <mat-icon>event_busy</mat-icon>
+        <p>{{ t.noOrdersYet }}</p>
+    </div>
+</div>

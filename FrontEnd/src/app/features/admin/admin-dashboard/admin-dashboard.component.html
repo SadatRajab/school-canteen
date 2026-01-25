@@ -1,0 +1,142 @@
+<div class="admin-layout">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+        <div class="sidebar-content">
+            <!-- Branding -->
+            <div class="branding">
+                <div class="logo-container">
+                    <img src="assets/images/school-logo.png" alt="School Logo" class="logo-image">
+                </div>
+                <div class="brand-info">
+                    <h1 class="brand-title">{{ t.canteenAdmin }}</h1>
+                    <p class="brand-subtitle">{{ t.schoolManagement }}</p>
+                </div>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav class="nav-links">
+                <a class="nav-item" [class.active]="selectedTab === 0" (click)="selectedTab = 0">
+                    <mat-icon>dashboard</mat-icon>
+                    <span>{{ t.dashboard || 'Dashboard' }}</span>
+                </a>
+                <a class="nav-item" [class.active]="selectedTab === 1" (click)="selectedTab = 1">
+                    <mat-icon>inventory_2</mat-icon>
+                    <span>{{ t.products }}</span>
+                </a>
+                <a class="nav-item" [class.active]="selectedTab === 2" (click)="selectedTab = 2">
+                    <mat-icon>receipt_long</mat-icon>
+                    <span>{{ t.orders }}</span>
+                </a>
+                <a class="nav-item" [class.active]="selectedTab === 3" (click)="selectedTab = 3">
+                    <mat-icon>payments</mat-icon>
+                    <span>{{ t.profit }}</span>
+                </a>
+            </nav>
+        </div>
+
+        <!-- Logout Button -->
+        <div class="sidebar-footer">
+            <button mat-raised-button class="logout-btn" (click)="logout()">
+                <mat-icon>logout</mat-icon>
+                {{ t.logout }}
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="header-left">
+                <h2 class="page-title">{{ t.canteenProOverview }}</h2>
+            </div>
+            <div class="header-right">
+                <button mat-raised-button class="lang-toggle" (click)="toggleLanguage()">
+                    <mat-icon>language</mat-icon>
+                    {{ currentLang === 'ar' ? 'AR' : 'EN' }}
+                </button>
+            </div>
+        </header>
+
+        <!-- Content Area -->
+        <div class="content-container" *ngIf="selectedTab === 0">
+            <!-- Dashboard Content -->
+            <div class="page-heading">
+                <h1>{{ t.adminDashboard }}</h1>
+                <p>{{ t.realTimeTracking }}</p>
+            </div>
+
+            <!-- KPI Stats -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <p class="kpi-label">{{ t.todayRevenue }}</p>
+                        <mat-icon class="kpi-icon">payments</mat-icon>
+                    </div>
+                    <p class="kpi-value">{{ todayProfit || 0 }} {{ t.currency }}</p>
+                    <div class="kpi-trend">
+                        <mat-icon>trending_up</mat-icon>
+                        <span>{{ t.revenueToday }}</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <p class="kpi-label">{{ t.totalOrders }}</p>
+                        <mat-icon class="kpi-icon">receipt_long</mat-icon>
+                    </div>
+                    <p class="kpi-value">{{ totalOrders || 0 }} {{ t.orders }}</p>
+                    <div class="kpi-trend">
+                        <mat-icon>trending_up</mat-icon>
+                        <span>{{ t.activeOrders }}</span>
+                    </div>
+                </div>
+
+                <div class="kpi-card">
+                    <div class="kpi-header">
+                        <p class="kpi-label">{{ t.pendingOrders }}</p>
+                        <mat-icon class="kpi-icon warning">warning</mat-icon>
+                    </div>
+                    <p class="kpi-value">{{ pendingOrders || 0 }} {{ t.items }}</p>
+                    <div class="kpi-trend warning">
+                        <mat-icon>pending</mat-icon>
+                        <span>{{ t.needsAttention }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Orders -->
+            <div class="recent-orders-section">
+                <div class="section-header">
+                    <h2>{{ t.recentOrders }}</h2>
+                    <button mat-button class="view-all-btn" (click)="selectedTab = 2">{{ t.viewAllOrders }}</button>
+                </div>
+                <app-orders-list [compact]="true"></app-orders-list>
+            </div>
+
+            <!-- Cash Alert Banner -->
+            <div class="alert-banner">
+                <div class="alert-icon">
+                    <mat-icon>info</mat-icon>
+                </div>
+                <div class="alert-content">
+                    <p class="alert-title">{{ t.cashOnlyPolicy }}</p>
+                    <p class="alert-text">{{ t.cashOnlyReminder }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Other Tabs Content -->
+        <div class="content-container" *ngIf="selectedTab === 1">
+            <app-products-list></app-products-list>
+        </div>
+
+        <div class="content-container" *ngIf="selectedTab === 2">
+            <app-orders-list></app-orders-list>
+        </div>
+
+        <div class="content-container" *ngIf="selectedTab === 3">
+            <app-profit-display></app-profit-display>
+        </div>
+    </main>
+</div>

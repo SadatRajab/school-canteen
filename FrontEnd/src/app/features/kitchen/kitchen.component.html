@@ -1,0 +1,71 @@
+<div class="kitchen-container" [class.tv-mode]="tvMode">
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="navbar-content">
+            <div class="navbar-left">
+                <img src="assets/images/school-logo.png" alt="School Logo" class="logo-image">
+                <h1 class="app-title">School Canteen</h1>
+                <p class="portal-subtitle">KITCHEN PORTAL</p>
+            </div>
+
+            <div class="navbar-right">
+                <button mat-raised-button (click)="toggleTVMode()" class="tv-toggle">
+                    {{ tvMode ? t.normalMode : t.tvMode }}
+                </button>
+                <button class="lang-toggle" (click)="toggleLanguage()">
+                    {{ currentLang === 'ar' ? 'AR' : 'EN' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <mat-spinner *ngIf="loading" class="loading-spinner"></mat-spinner>
+
+    <div *ngIf="!loading && orders.length === 0" class="empty-state">
+        <p>{{ t.noOrders }}</p>
+    </div>
+
+    <div class="orders-grid" *ngIf="!loading && orders.length > 0">
+        <div *ngFor="let order of orders" class="order-card" [ngClass]="getStatusClass(order.status)">
+            <div class="order-header">
+                <div class="status-text">
+                    {{ t[order.status.toLowerCase()] || order.status }}
+                </div>
+                <div class="time-text">
+                    {{ order.createdAt | date: 'shortTime' }}
+                </div>
+            </div>
+
+            <div class="queue-number">#{{ order.orderNumber.toString().padStart(3, '0') }}</div>
+
+            <div class="items-list">
+                <div *ngFor="let item of order.items" class="item-row">
+                    <span class="item-quantity">{{ item.quantity }}x</span>
+                    <div class="item-names">
+                        <div class="item-name-en">{{ item.nameSnapshotEn }}</div>
+                        <div class="item-name-ar">{{ item.nameSnapshotAr }}</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="total-price-section">
+                <div class="total-label">{{ currentLang === 'ar' ? 'المبلغ المطلوب' : 'Amount to Collect' }}</div>
+                <div class="total-amount">{{ order.totalAmount || 0 }} Đ</div>
+            </div>
+
+            <button *ngIf="order.status === 'PENDING'" mat-raised-button class="ready-button"
+                (click)="startPreparing(order)" [disabled]="isProcessing(getOrderId(order))">
+                <mat-icon *ngIf="!isProcessing(getOrderId(order))">check_circle</mat-icon>
+                <mat-spinner *ngIf="isProcessing(getOrderId(order))" diameter="20"></mat-spinner>
+                <span *ngIf="!isProcessing(getOrderId(order))">{{ t.startPreparing }}</span>
+            </button>
+
+            <button *ngIf="order.status === 'PREPARING'" mat-raised-button class="ready-button"
+                (click)="markDelivered(order)" [disabled]="isProcessing(getOrderId(order))">
+                <mat-icon *ngIf="!isProcessing(getOrderId(order))">check_circle</mat-icon>
+                <mat-spinner *ngIf="isProcessing(getOrderId(order))" diameter="20"></mat-spinner>
+                <span *ngIf="!isProcessing(getOrderId(order))">{{ t.markDelivered }}</span>
+            </button>
+        </div>
+    </div>
+</div>

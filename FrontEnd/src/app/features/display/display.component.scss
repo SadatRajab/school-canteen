@@ -1,0 +1,155 @@
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.orders-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 24px;
+}
+
+.order-card {
+    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+    border-radius: 16px;
+    padding: 0;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s, box-shadow 0.3s;
+    border: 2px solid #34495e;
+
+    &:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .order-header {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 16px 24px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+        .status-text {
+            font-size: 1.1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .time-text {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            font-size: 1rem;
+            font-weight: 600;
+
+            .time-value {
+                color: white;
+            }
+
+            .time-ar {
+                color: rgba(255, 255, 255, 0.7);
+                font-size: 0.85rem;
+                margin-top: 2px;
+            }
+        }
+    }
+
+    .queue-number {
+        font-size: 5rem;
+        font-weight: 900;
+        color: white;
+        text-align: center;
+        padding: 48px 24px;
+        letter-spacing: 2px;
+    }
+
+    // Status colors
+    &.status-pending {
+        .status-text {
+            color: #f39c12;
+        }
+    }
+
+    &.status-preparing {
+        background: linear-gradient(135deg, #16697a 0%, #1a7a8a 100%);
+        border-color: #1a7a8a;
+
+        .status-text {
+            color: #4fc3f7;
+        }
+    }
+
+    &.status-delivered {
+        .status-text {
+            color: #27ae60;
+        }
+    }
+}
+
+.loading-container,
+.no-orders {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 80px 20px;
+
+    mat-icon {
+        font-size: 100px;
+        width: 100px;
+        height: 100px;
+        color: rgba(0, 0, 0, 0.3);
+    }
+}
+
+// TV Mode
+.tv-mode {
+    .orders-grid {
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 30px;
+    }
+
+    .order-card {
+        padding: 40px;
+
+        .queue-number {
+            font-size: 5rem;
+        }
+
+        .time {
+            font-size: 1.5rem !important;
+        }
+
+        mat-chip {
+            font-size: 1.2rem;
+            padding: 12px 24px;
+            height: auto;
+        }
+    }
+
+    .header h1 {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .orders-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: 15px;
+    }
+
+    .order-card .queue-number {
+        font-size: 2rem;
+    }
+}

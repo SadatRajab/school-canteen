@@ -1,0 +1,50 @@
+<h2 mat-dialog-title>{{ t.cart }}</h2>
+
+<mat-dialog-content>
+  <div *ngIf="cartItems.length === 0" class="empty-cart">
+    <mat-icon>shopping_cart</mat-icon>
+    <p>{{ t.emptyCart }}</p>
+  </div>
+
+  <div *ngFor="let item of cartItems" class="cart-item">
+    <img [src]="getImageUrl(item)" [alt]="getProductName(item)" class="item-image">
+
+    <div class="item-info">
+      <h4>{{ getProductName(item) }}</h4>
+      <p class="price">{{ item.product.price }} {{ t.currency }} × {{ item.quantity }}</p>
+    </div>
+
+    <div class="item-actions">
+      <button mat-icon-button (click)="updateQuantity(item.product._id, item.quantity - 1)">
+        <mat-icon>remove</mat-icon>
+      </button>
+      <span class="quantity">{{ item.quantity }}</span>
+      <button mat-icon-button (click)="updateQuantity(item.product._id, item.quantity + 1)">
+        <mat-icon>add</mat-icon>
+      </button>
+      <button mat-icon-button color="warn" (click)="removeItem(item.product._id)">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div *ngIf="cartItems.length > 0" class="total">
+    <h3>{{ t.estimatedTotal }}:</h3>
+    <h3 class="amount">{{ total }}</h3>
+  </div>
+
+  <div class="cash-notice" *ngIf="cartItems.length > 0">
+    <mat-chip color="accent" selected>
+      <mat-icon>payments</mat-icon>
+      {{ t.cashOnly }} - {{ t.payOnPickup }}
+    </mat-chip>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>{{ t.cancel }}</button>
+  <button mat-raised-button color="primary" (click)="checkout()" [disabled]="cartItems.length === 0 || loading">
+    <mat-spinner *ngIf="loading" diameter="20"></mat-spinner>
+    <span *ngIf="!loading">{{ t.checkout }}</span>
+  </button>
+</mat-dialog-actions>

@@ -1,0 +1,328 @@
+{
+    "info": {
+        "name": "School Canteen API",
+        "_postman_id": "school-canteen-collection",
+        "description": "Complete API collection for School Canteen Backend (CASH ONLY)",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:5000/api",
+            "type": "string"
+        },
+        {
+            "key": "adminToken",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "productId",
+            "value": "",
+            "type": "string"
+        },
+        {
+            "key": "orderId",
+            "value": "",
+            "type": "string"
+        }
+    ],
+    "item": [
+        {
+            "name": "0️⃣ Health Check",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{baseUrl}}/health",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "health"
+                    ]
+                },
+                "description": "اختبار إن الـ API شغال"
+            }
+        },
+        {
+            "name": "1️⃣ Admin Login",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "// حفظ الـ Token تلقائياً",
+                            "if (pm.response.code === 200) {",
+                            "    const response = pm.response.json();",
+                            "    pm.collectionVariables.set('adminToken', response.token);",
+                            "    console.log('✅ Token saved:', response.token);",
+                            "}"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"password\": \"admin123\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/admin/login",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "admin",
+                        "login"
+                    ]
+                },
+                "description": "تسجيل دخول الأدمن (الباسورد: admin123)"
+            }
+        },
+        {
+            "name": "2️⃣ Create Product (Admin)",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "// حفظ الـ Product ID تلقائياً",
+                            "if (pm.response.code === 201) {",
+                            "    const response = pm.response.json();",
+                            "    pm.collectionVariables.set('productId', response.data._id);",
+                            "    console.log('✅ Product ID saved:', response.data._id);",
+                            "}"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    },
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{adminToken}}"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"nameAr\": \"ساندوتش فلافل\",\n  \"nameEn\": \"Falafel Sandwich\",\n  \"price\": 15,\n  \"category\": \"sandwiches\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/admin/products",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "admin",
+                        "products"
+                    ]
+                },
+                "description": "إنشاء منتج جديد (محتاج Admin Token)"
+            }
+        },
+        {
+            "name": "3️⃣ Get All Products",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{baseUrl}}/products",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "products"
+                    ]
+                },
+                "description": "عرض جميع المنتجات (لا يحتاج تسجيل دخول)"
+            }
+        },
+        {
+            "name": "4️⃣ Create Order (CASH)",
+            "event": [
+                {
+                    "listen": "test",
+                    "script": {
+                        "exec": [
+                            "// حفظ الـ Order ID تلقائياً",
+                            "if (pm.response.code === 201) {",
+                            "    const response = pm.response.json();",
+                            "    pm.collectionVariables.set('orderId', response.data._id);",
+                            "    console.log('✅ Order ID saved:', response.data._id);",
+                            "    console.log('📝 Order Number:', response.data.orderNumber);",
+                            "}"
+                        ],
+                        "type": "text/javascript"
+                    }
+                }
+            ],
+            "request": {
+                "method": "POST",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "body": {
+                    "mode": "raw",
+                    "raw": "{\n  \"items\": [\n    {\n      \"productId\": \"{{productId}}\",\n      \"quantity\": 2\n    }\n  ],\n  \"timezone\": \"Africa/Cairo\"\n}"
+                },
+                "url": {
+                    "raw": "{{baseUrl}}/orders",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "orders"
+                    ]
+                },
+                "description": "إنشاء طلب جديد (الدفع CASH تلقائياً)"
+            }
+        },
+        {
+            "name": "5️⃣ Kitchen - Today's Orders",
+            "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                    "raw": "{{baseUrl}}/kitchen/orders/today?timezone=Africa/Cairo",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "kitchen",
+                        "orders",
+                        "today"
+                    ],
+                    "query": [
+                        {
+                            "key": "timezone",
+                            "value": "Africa/Cairo"
+                        }
+                    ]
+                },
+                "description": "عرض طلبات اليوم للمطبخ (بدون أسعار)"
+            }
+        },
+        {
+            "name": "6️⃣ Kitchen - Start Preparing",
+            "request": {
+                "method": "PATCH",
+                "header": [
+                    {
+                        "key": "Content-Type",
+                        "value": "application/json"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/kitchen/orders/{{orderId}}/start",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "kitchen",
+                        "orders",
+                        "{{orderId}}",
+                        "start"
+                    ]
+                },
+                "description": "بدء تحضير الطلب في المطبخ"
+            }
+        },
+        {
+            "name": "7️⃣ Admin - Deliver Order",
+            "request": {
+                "method": "PATCH",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{adminToken}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/admin/orders/{{orderId}}/deliver",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "admin",
+                        "orders",
+                        "{{orderId}}",
+                        "deliver"
+                    ]
+                },
+                "description": "تسليم الطلب (Admin فقط)"
+            }
+        },
+        {
+            "name": "8️⃣ Admin - Today's Profit",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{adminToken}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/admin/profit/today?timezone=Africa/Cairo",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "admin",
+                        "profit",
+                        "today"
+                    ],
+                    "query": [
+                        {
+                            "key": "timezone",
+                            "value": "Africa/Cairo"
+                        }
+                    ]
+                },
+                "description": "عرض أرباح اليوم (Admin فقط)"
+            }
+        },
+        {
+            "name": "9️⃣ Admin - Total Profit",
+            "request": {
+                "method": "GET",
+                "header": [
+                    {
+                        "key": "Authorization",
+                        "value": "Bearer {{adminToken}}"
+                    }
+                ],
+                "url": {
+                    "raw": "{{baseUrl}}/admin/profit/total",
+                    "host": [
+                        "{{baseUrl}}"
+                    ],
+                    "path": [
+                        "admin",
+                        "profit",
+                        "total"
+                    ]
+                },
+                "description": "عرض الأرباح الكلية (Admin فقط)"
+            }
+        }
+    ]
+}

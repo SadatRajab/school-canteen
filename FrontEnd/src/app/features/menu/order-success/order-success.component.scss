@@ -1,0 +1,250 @@
+.success-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #faf8f3 0%, #f5f1e8 100%);
+    padding: 20px;
+}
+
+.success-card {
+    background: white;
+    border-radius: 20px;
+    padding: 60px 40px;
+    max-width: 600px;
+    width: 100%;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.success-icon {
+    margin-bottom: 24px;
+
+    mat-icon {
+        font-size: 80px;
+        width: 80px;
+        height: 80px;
+        color: #f6a623;
+        animation: scaleIn 0.5s ease-out;
+    }
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.1);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.success-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0 0 12px 0;
+}
+
+.success-subtitle {
+    color: #6b7280;
+    font-size: 1rem;
+    margin: 0 0 32px 0;
+}
+
+.payment-badge {
+    display: inline-block;
+    background: #f6a623;
+    color: #1a1a1a;
+    padding: 12px 32px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    margin-bottom: 40px;
+}
+
+.queue-section {
+    background: #faf8f3;
+    border-radius: 16px;
+    padding: 40px 30px;
+    margin-bottom: 32px;
+}
+
+.queue-label {
+    font-size: 0.85rem;
+    color: #6b7280;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin: 0 0 12px 0;
+}
+
+.queue-number {
+    font-size: 4rem;
+    font-weight: 800;
+    color: #1a1a1a;
+    margin: 0 0 32px 0;
+    letter-spacing: 2px;
+}
+
+.order-details {
+    display: flex;
+    justify-content: center;
+    gap: 60px;
+    margin-bottom: 24px;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    .label {
+        font-size: 0.75rem;
+        color: #6b7280;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .value {
+        font-size: 1rem;
+        color: #1a1a1a;
+        font-weight: 600;
+    }
+}
+
+.total-amount {
+    margin-top: 20px;
+    padding: 16px 24px;
+    background: linear-gradient(135deg, #f6a623 0%, #f39c12 100%);
+    border-radius: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .total-label {
+        font-size: 1rem;
+        font-weight: 700;
+        color: white;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .total-value {
+        font-size: 1.5rem;
+        font-weight: 900;
+        color: white;
+        letter-spacing: 1px;
+    }
+}
+
+.warning-notice {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff9e6;
+    color: #d97706;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+
+    mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+    }
+}
+
+.action-buttons {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+
+    button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 28px;
+        border: none;
+        border-radius: 12px;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+
+        mat-icon {
+            font-size: 20px;
+            width: 20px;
+            height: 20px;
+        }
+    }
+
+    .btn-secondary {
+        background: white;
+        color: #1a1a1a;
+        border: 2px solid #e5e7eb;
+
+        &:hover {
+            background: #f9fafb;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+    }
+
+    .btn-primary {
+        background: #f6a623;
+        color: #1a1a1a;
+
+        &:hover {
+            background: #e09515;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(246, 166, 35, 0.3);
+        }
+    }
+}
+
+// Responsive
+@media (max-width: 768px) {
+    .success-card {
+        padding: 40px 24px;
+    }
+
+    .success-title {
+        font-size: 1.5rem;
+    }
+
+    .queue-number {
+        font-size: 3rem;
+    }
+
+    .order-details {
+        gap: 40px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+
+        button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+}
+
+// Print styles
+@media print {
+    .success-container {
+        background: white;
+    }
+
+    .action-buttons {
+        display: none;
+    }
+}

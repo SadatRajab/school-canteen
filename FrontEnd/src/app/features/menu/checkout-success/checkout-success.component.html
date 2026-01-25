@@ -1,0 +1,45 @@
+<div class="container success-container" *ngIf="order">
+    <mat-card class="success-card">
+        <mat-icon class="success-icon">check_circle</mat-icon>
+
+        <h1>{{ t.success }}!</h1>
+        <p class="message">{{ t.orderSuccess }}</p>
+
+        <div class="queue-number-display">
+            <div class="label">{{ t.yourQueueNumber }}</div>
+            <div class="number">{{ order.orderNumber }}</div>
+        </div>
+
+        <div class="order-details">
+            <p><strong>{{ t.orderDate }}:</strong> {{ order.orderDate }}</p>
+            <p><strong>{{ t.orderTime }}:</strong> {{ order.createdAt | date:'short' }}</p>
+            <p><strong>{{ t.total }}:</strong> {{ order.totalAmount }}</p>
+            <p><strong>{{ t.paymentMethod }}:</strong> {{ t.cashOnly }}</p>
+        </div>
+
+        <div class="items-list">
+            <h3>{{ t.order }}:</h3>
+            <ul>
+                <li *ngFor="let item of order.items">
+                    {{ getItemName(item) }} × {{ item.quantity }}
+                </li>
+            </ul>
+        </div>
+
+        <div class="notices">
+            <mat-chip color="primary" selected>
+                <mat-icon>payments</mat-icon>
+                {{ t.payOnPickup }}
+            </mat-chip>
+            <mat-chip color="accent" selected>
+                <mat-icon>event</mat-icon>
+                {{ t.validToday }}
+            </mat-chip>
+        </div>
+
+        <button mat-raised-button color="primary" (click)="backToMenu()" class="mt-3">
+            <mat-icon>arrow_back</mat-icon>
+            {{ t.back }}
+        </button>
+    </mat-card>
+</div>

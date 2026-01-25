@@ -1,0 +1,31 @@
+<div class="profit-container">
+    <h2>{{ t.profit }}</h2>
+
+    <mat-spinner *ngIf="loading" class="loading-spinner"></mat-spinner>
+
+    <div class="profit-cards" *ngIf="!loading">
+        <mat-card class="profit-card today">
+            <mat-card-header>
+                <mat-card-title>
+                    <mat-icon>today</mat-icon>
+                    {{ t.todayProfit }}
+                </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <div class="amount">{{ todayProfit }} {{ t.currency }}</div>
+            </mat-card-content>
+        </mat-card>
+
+        <mat-card class="profit-card total">
+            <mat-card-header>
+                <mat-card-title>
+                    <mat-icon>account_balance_wallet</mat-icon>
+                    {{ t.totalProfit }}
+                </mat-card-title>
+            </mat-card-header>
+            <mat-card-content>
+                <div class="amount">{{ totalProfit }} {{ t.currency }}</div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>

@@ -1,0 +1,150 @@
+<div class="menu-layout">
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="navbar-content">
+            <div class="navbar-left">
+                <img src="assets/images/school-logo.png" alt="School Logo" class="logo-image">
+                <h1 class="app-title">School Canteen</h1>
+                <p class="portal-subtitle">STUDENT PORTAL</p>
+            </div>
+
+            <div class="navbar-center">
+                <div class="search-box">
+                    <mat-icon>search</mat-icon>
+                    <input type="text" placeholder="Search menu..." [(ngModel)]="searchText">
+                </div>
+            </div>
+
+            <div class="navbar-right">
+                <button class="cart-badge-btn">
+                    <mat-icon>shopping_cart</mat-icon>
+                    <span class="badge" *ngIf="cartCount > 0">{{ cartCount }}</span>
+                </button>
+                <button class="lang-toggle" (click)="toggleLanguage()">
+                    {{ currentLang === 'ar' ? 'AR' : 'EN' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="content-wrapper">
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1 class="category-title">{{ t.menu }}</h1>
+                <p class="category-subtitle">{{ t['freshlyPrepared'] }}</p>
+            </div>
+
+            <div *ngIf="loading" class="loading-container">
+                <mat-spinner></mat-spinner>
+            </div>
+
+            <div *ngIf="!loading && error" class="error-container">
+                <p>{{ error }}</p>
+                <button mat-raised-button (click)="loadProducts()">{{ t.back }}</button>
+            </div>
+
+            <div *ngIf="!loading && !error" class="products-grid">
+                <div *ngFor="let product of filteredProducts" class="product-card">
+                    <div class="product-image">
+                        <img [src]="getImageUrl(product)" [alt]="getProductName(product)">
+                    </div>
+
+                    <div class="product-info">
+                        <div class="product-header">
+                            <h3 class="product-name">{{ getProductName(product) }}</h3>
+                            <span class="product-price">{{ product.price }}.00 {{ t.currency }}</span>
+                        </div>
+
+                        <p class="product-description">{{ getProductDesc(product) }}</p>
+
+                        <div class="product-actions">
+                            <span class="qty-label">Qty:</span>
+                            <div class="quantity-controls">
+                                <button class="qty-btn" (click)="decreaseQuantity(product)"
+                                    [disabled]="getProductQuantity(product) === 0">
+                                    <mat-icon>remove</mat-icon>
+                                </button>
+                                <span class="qty-value">{{ getProductQuantity(product) }}</span>
+                                <button class="qty-btn" (click)="increaseQuantity(product)">
+                                    <mat-icon>add</mat-icon>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="filteredProducts.length === 0 && !loading" class="no-products">
+                <mat-icon>restaurant</mat-icon>
+                <p>{{ t.noProducts }}</p>
+            </div>
+        </div>
+
+        <!-- Cart Sidebar -->
+        <div class="cart-sidebar">
+            <div class="cart-header">
+                <div class="cart-title-wrapper">
+                    <mat-icon class="cart-icon">shopping_cart</mat-icon>
+                    <div class="cart-title">
+                        <h2><span class="cart-text">{{ t.cart }}</span></h2>
+                        <span class="item-count">{{ cartCount }} ITEMS</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cart-items">
+                <div *ngIf="cartItems.length === 0" class="empty-cart">
+                    <p>{{ t.emptyCart }}</p>
+                </div>
+
+                <div *ngFor="let item of cartItems" class="cart-item">
+                    <img [src]="getImageUrl(item.product)" [alt]="getProductName(item)" class="item-image">
+
+                    <div class="item-details">
+                        <h4>{{ getProductName(item) }}</h4>
+                        <p class="item-price">{{ item.product.price }}.00 {{ t.currency }}</p>
+
+                        <div class="item-quantity">
+                            <button mat-icon-button (click)="updateQuantity(item.product._id, item.quantity - 1)"
+                                class="qty-small">
+                                <mat-icon>remove</mat-icon>
+                            </button>
+                            <span>{{ item.quantity }}</span>
+                            <button mat-icon-button (click)="updateQuantity(item.product._id, item.quantity + 1)"
+                                class="qty-small">
+                                <mat-icon>add</mat-icon>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button mat-icon-button (click)="removeItem(item.product._id)" class="delete-btn">
+                        <mat-icon>delete_outline</mat-icon>
+                    </button>
+                </div>
+            </div>
+
+            <div class="cart-summary" *ngIf="cartItems.length > 0">
+                <div class="summary-row total">
+                    <span>{{ t.total }}</span>
+                    <span class="amount">{{ total }}.00 {{ t.currency }}</span>
+                </div>
+
+                <button class="confirm-btn" (click)="checkout()" [disabled]="loading">
+                    <mat-icon>receipt_long</mat-icon>
+                    {{ t['confirmOrder'] }}
+                </button>
+
+                <div class="cash-notice">
+                    <mat-icon>payments</mat-icon>
+                    <span>{{ t.cashOnly }} - {{ t.payOnPickup }}</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Cart Button (Mobile Only) -->
+    <button class="floating-cart-btn" (click)="openCartDialog()" *ngIf="cartCount > 0">
+        <mat-icon>shopping_cart</mat-icon>
+        <span class="floating-badge">{{ cartCount }}</span>
+    </button>
