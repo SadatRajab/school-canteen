@@ -19,6 +19,9 @@ connectDB();
 
 const app = express();
 
+// ========== Trust Proxy (for Railway/Production) ==========
+app.set('trust proxy', 1);
+
 // ========== Security Middleware ==========
 app.use(helmet());
 app.use(mongoSanitize());
