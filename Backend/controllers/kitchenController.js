@@ -11,14 +11,14 @@ exports.getTodayKitchenOrders = async (req, res, next) => {
         const timezone = getTimezoneOrDefault(req);
         const orderDate = getOrderDate(timezone);
 
-        // Fetch only PENDING and PREPARING orders for today
+        // Fetch only PENDING and READY orders for today
         const orders = await Order.find({
             orderDate,
             timezone,
-            status: { $in: ['PENDING', 'PREPARING'] }
+            status: { $in: ['PENDING', 'READY'] }
         })
             .sort({ orderNumber: 1 })
-            .select('orderNumber createdAt status items preparingAt totalAmount')
+            .select('orderNumber createdAt status items readyAt totalAmount')
             .lean();
 
         // Transform orders to expose only kitchen-relevant data
@@ -27,7 +27,7 @@ exports.getTodayKitchenOrders = async (req, res, next) => {
             orderNumber: order.orderNumber,
             createdAt: order.createdAt,
             status: order.status,
-            preparingAt: order.preparingAt,
+            readyAt: order.readyAt,
             totalAmount: order.totalAmount,
             items: order.items.map(item => ({
                 nameSnapshotEn: item.nameSnapshotEn,
@@ -52,7 +52,7 @@ exports.getTodayKitchenOrders = async (req, res, next) => {
 };
 
 /**
- * @desc    Start preparing an order (PENDING → PREPARING)
+ * @desc    Mark order as ready (PENDING → READY)
  * @route   PATCH /api/kitchen/orders/:id/start
  * @access  Public/Kitchen
  */
@@ -71,13 +71,13 @@ exports.startPreparing = async (req, res, next) => {
         if (order.status !== 'PENDING') {
             return res.status(400).json({
                 success: false,
-                message: `Cannot start preparing. Order is already ${order.status}`
+                message: `Cannot mark as ready. Order is already ${order.status}`
             });
         }
 
-        // Update status to PREPARING
-        order.status = 'PREPARING';
-        order.preparingAt = new Date();
+        // Update status to READY
+        order.status = 'READY';
+        order.readyAt = new Date();
         await order.save();
 
         // Return kitchen-safe data (no prices)
@@ -87,7 +87,7 @@ exports.startPreparing = async (req, res, next) => {
                 orderId: order._id,
                 orderNumber: order.orderNumber,
                 status: order.status,
-                preparingAt: order.preparingAt,
+                readyAt: order.readyAt,
                 items: order.items.map(item => ({
                     nameSnapshotEn: item.nameSnapshotEn,
                     nameSnapshotAr: item.nameSnapshotAr,
@@ -101,7 +101,7 @@ exports.startPreparing = async (req, res, next) => {
 };
 
 /**
- * @desc    Mark order as delivered (PREPARING → DELIVERED)
+ * @desc    Mark order as delivered (READY → DELIVERED)
  * @route   PATCH /api/kitchen/orders/:id/deliver
  * @access  Public/Kitchen
  */
@@ -116,8 +116,8 @@ exports.markDelivered = async (req, res, next) => {
             });
         }
 
-        // يمكن تسليم الطلب من أي حالة (PENDING أو PREPARING)
-        if (!['PENDING', 'PREPARING'].includes(order.status)) {
+        // يمكن تسليم الطلب من أي حالة (PENDING أو READY)
+        if (!['PENDING', 'READY'].includes(order.status)) {
             return res.status(400).json({
                 success: false,
                 message: `Cannot mark as delivered. Order is ${order.status}`

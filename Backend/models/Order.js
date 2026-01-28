@@ -68,10 +68,10 @@ const orderSchema = new mongoose.Schema(
         },
         status: {
             type: String,
-            enum: ['PENDING', 'PREPARING', 'DELIVERED'],
+            enum: ['PENDING', 'READY', 'DELIVERED'],
             default: 'PENDING'
         },
-        preparingAt: {
+        readyAt: {
             type: Date,
             default: null
         },

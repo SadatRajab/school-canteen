@@ -56,10 +56,10 @@
                 (click)="startPreparing(order)" [disabled]="isProcessing(getOrderId(order))">
                 <mat-icon *ngIf="!isProcessing(getOrderId(order))">check_circle</mat-icon>
                 <mat-spinner *ngIf="isProcessing(getOrderId(order))" diameter="20"></mat-spinner>
-                <span *ngIf="!isProcessing(getOrderId(order))">{{ t.startPreparing }}</span>
+                <span *ngIf="!isProcessing(getOrderId(order))">{{ t.markReady }}</span>
             </button>
 
-            <button *ngIf="order.status === 'PREPARING'" mat-raised-button class="ready-button"
+            <button *ngIf="order.status === 'READY'" mat-raised-button class="ready-button"
                 (click)="markDelivered(order)" [disabled]="isProcessing(getOrderId(order))">
                 <mat-icon *ngIf="!isProcessing(getOrderId(order))">check_circle</mat-icon>
                 <mat-spinner *ngIf="isProcessing(getOrderId(order))" diameter="20"></mat-spinner>

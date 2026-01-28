@@ -40,7 +40,7 @@ export class AdminDashboardComponent implements OnInit {
             next: (response) => {
                 this.totalOrders = response.data?.length || 0;
                 this.pendingOrders = response.data?.filter((o) =>
-                    o.status === 'PENDING' || o.status === 'PREPARING'
+                    o.status === 'PENDING' || o.status === 'READY'
                 ).length || 0;
             },
             error: (err: any) => console.error('Error loading orders:', err)

@@ -36,7 +36,7 @@ export interface OrderItem {
 }
 
 // Order Status
-export type OrderStatus = 'PENDING' | 'PREPARING' | 'DELIVERED';
+export type OrderStatus = 'PENDING' | 'READY' | 'DELIVERED';
 
 // Order Model
 export interface Order {

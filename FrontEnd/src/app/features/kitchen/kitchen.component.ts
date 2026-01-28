@@ -78,7 +78,7 @@ export class KitchenComponent implements OnInit, OnDestroy {
         this.apiService.startPreparingOrder(orderId).subscribe({
             next: () => {
                 this.processingOrders.delete(orderId);
-                this.snackBar.open(this.t.preparingStarted, this.t.close, { duration: 2000 });
+                this.snackBar.open(this.t.markedReady, this.t.close, { duration: 2000 });
                 this.loadOrders();
             },
             error: () => {

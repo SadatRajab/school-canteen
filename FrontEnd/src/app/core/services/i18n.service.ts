@@ -113,8 +113,8 @@ export interface Translation {
 
     // Kitchen
     kitchen: string;
-    startPreparing: string;
-    inPreparation: string;
+    markReady: string;
+    ready: string;
     noOrdersYet: string;
     refreshing: string;
 
@@ -187,7 +187,7 @@ export interface Translation {
     productUpdated: string;
     productDeleted: string;
     orderDelivered: string;
-    preparingStarted: string;
+    markedReady: string;
     confirmDelete: string;
 }
 
@@ -291,7 +291,7 @@ export class I18nService {
             orderTime: 'Order Time',
             status: 'Status',
             pending: 'Pending',
-            preparing: 'Preparing',
+            ready: 'Ready for Pickup',
             delivered: 'Delivered',
             cashOnly: 'Cash Only',
             paymentMethod: 'Payment Method',
@@ -309,8 +309,8 @@ export class I18nService {
 
             // Kitchen
             kitchen: 'Kitchen',
-            startPreparing: 'Start Preparing',
-            inPreparation: 'In Preparation',
+            markReady: 'Mark Ready',
+            ready: 'Ready for Pickup',
             noOrdersYet: 'No orders yet',
             refreshing: 'Refreshing...',
 
@@ -383,7 +383,7 @@ export class I18nService {
             productUpdated: 'Product updated successfully',
             productDeleted: 'Product deleted successfully',
             orderDelivered: 'Order marked as delivered',
-            preparingStarted: 'Preparation started',
+            markedReady: 'Marked as ready for pickup',
             confirmDelete: 'Are you sure you want to delete this product?'
         },
         ar: {
@@ -477,7 +477,7 @@ export class I18nService {
             orderTime: 'وقت الطلب',
             status: 'الحالة',
             pending: 'قيد الانتظار',
-            preparing: 'قيد التحضير',
+            ready: 'جاهز للاستلام',
             delivered: 'تم التسليم',
             cashOnly: 'نقدي فقط',
             paymentMethod: 'طريقة الدفع',
@@ -495,8 +495,8 @@ export class I18nService {
 
             // Kitchen
             kitchen: 'المطبخ',
-            startPreparing: 'ابدأ التحضير',
-            inPreparation: 'قيد التحضير',
+            markReady: 'تأكيد الجاهزية',
+            ready: 'جاهز للاستلام',
             noOrdersYet: 'لا توجد طلبات بعد',
             refreshing: 'جاري التحديث...',
 
@@ -569,7 +569,7 @@ export class I18nService {
             productUpdated: 'تم تحديث المنتج بنجاح',
             productDeleted: 'تم حذف المنتج بنجاح',
             orderDelivered: 'تم تسليم الطلب',
-            preparingStarted: 'تم بدء التحضير',
+            markedReady: 'تم تأكيد جاهزية الطلب',
             confirmDelete: 'هل أنت متأكد من حذف هذا المنتج؟'
         }
     };
