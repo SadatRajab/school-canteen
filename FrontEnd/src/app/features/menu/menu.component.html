@@ -4,14 +4,14 @@
         <div class="navbar-content">
             <div class="navbar-left">
                 <img src="assets/images/school-logo.png" alt="School Logo" class="logo-image">
-                <h1 class="app-title">School Canteen</h1>
-                <p class="portal-subtitle">STUDENT PORTAL</p>
+                <h1 class="app-title">{{ t.appName }}</h1>
+                <p class="portal-subtitle">{{ t.studentPortal }}</p>
             </div>
 
             <div class="navbar-center">
                 <div class="search-box">
                     <mat-icon>search</mat-icon>
-                    <input type="text" placeholder="Search menu..." [(ngModel)]="searchText">
+                    <input type="text" [placeholder]="t.searchMenu" [(ngModel)]="searchText">
                 </div>
             </div>
 

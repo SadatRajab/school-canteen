@@ -20,10 +20,6 @@ import { I18nService, Translation } from './core/services/i18n.service';
           <mat-icon>tv</mat-icon>
           <span>{{ t.publicDisplay }}</span>
         </button>
-        <button mat-menu-item routerLink="/kitchen">
-          <mat-icon>kitchen</mat-icon>
-          <span>{{ t.kitchen }}</span>
-        </button>
         <button mat-menu-item routerLink="/admin">
           <mat-icon>admin_panel_settings</mat-icon>
           <span>{{ t.admin }}</span>

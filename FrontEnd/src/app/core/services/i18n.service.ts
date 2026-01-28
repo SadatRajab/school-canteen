@@ -59,6 +59,11 @@ export interface Translation {
     updateSuccess: string;
     createSuccess: string;
 
+    // Portals
+    studentPortal: string;
+    kitchenPortal: string;
+    searchMenu: string;
+
     // Menu
     menu: string;
     products: string;
@@ -250,6 +255,11 @@ export class I18nService {
             updateSuccess: 'Updated successfully',
             createSuccess: 'Created successfully',
 
+            // Portals
+            studentPortal: 'STUDENT PORTAL',
+            kitchenPortal: 'KITCHEN PORTAL',
+            searchMenu: 'Search menu...',
+
             // Menu
             menu: 'Menu',
             products: 'Products',
@@ -378,7 +388,7 @@ export class I18nService {
         },
         ar: {
             // Common
-            appName: 'كافتيريا المدرسة',
+            appName: 'مقصف المدرسة',
             language: 'اللغة',
             english: 'English',
             arabic: 'العربية',
@@ -430,6 +440,11 @@ export class I18nService {
             imageUploadFailed: 'فشل رفع الصورة',
             updateSuccess: 'تم التحديث بنجاح',
             createSuccess: 'تم الإنشاء بنجاح',
+
+            // Portals
+            studentPortal: 'بوابة الطلاب',
+            kitchenPortal: 'بوابة المطبخ',
+            searchMenu: 'ابحث في القائمة...',
 
             // Menu
             menu: 'القائمة',
