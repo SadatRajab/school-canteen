@@ -1,16 +1,24 @@
-// Product Model
+// Product Model - Updated for Frontend-Only Architecture
 export interface Product {
-    _id: string;
+    // New frontend-only fields
+    id: string;                    // UUID generated locally
     nameAr: string;
     nameEn: string;
-    descAr?: string;
-    descEn?: string;
+    descriptionAr?: string;        // New field
+    descriptionEn?: string;        // New field
     price: number;
     category?: string;
-    imageUrl?: string;
-    isAvailable: boolean;
-    createdAt?: string;
-    updatedAt?: string;
+    imageDataUrl?: string;         // Base64 encoded image (replaces imageUrl)
+    available: boolean;            // Renamed from isAvailable
+    createdAt: Date;
+    updatedAt: Date;
+
+    // Legacy fields for backward compatibility (deprecated)
+    _id?: string;                  // Legacy MongoDB ID
+    descAr?: string;               // Legacy description
+    descEn?: string;               // Legacy description
+    imageUrl?: string;             // Legacy image URL
+    isAvailable?: boolean;         // Legacy availability flag
 }
 
 // Cart Item

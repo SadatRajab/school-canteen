@@ -25,7 +25,11 @@ export class CartService {
 
     addToCart(product: Product, quantity: number = 1): void {
         const cart = this.cartSubject.value;
-        const existingItem = cart.find(item => item.product._id === product._id);
+        // Use new 'id' field (with fallback to legacy '_id')
+        const productId = product.id || product._id || '';
+        const existingItem = cart.find(item =>
+            (item.product.id || item.product._id) === productId
+        );
 
         if (existingItem) {
             existingItem.quantity += quantity;
@@ -37,13 +41,17 @@ export class CartService {
     }
 
     removeFromCart(productId: string): void {
-        const cart = this.cartSubject.value.filter(item => item.product._id !== productId);
+        const cart = this.cartSubject.value.filter(item =>
+            (item.product.id || item.product._id) !== productId
+        );
         this.saveCart(cart);
     }
 
     updateQuantity(productId: string, quantity: number): void {
         const cart = this.cartSubject.value;
-        const item = cart.find(i => i.product._id === productId);
+        const item = cart.find(i =>
+            (i.product.id || i.product._id) === productId
+        );
 
         if (item) {
             if (quantity <= 0) {

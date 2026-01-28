@@ -3,9 +3,9 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router } from '@angular/router';
 import { CartService } from '../../../core/services/cart.service';
-import { ApiService } from '../../../core/services/api.service';
+import { OrderService } from '../../../core/services/order.service';
 import { I18nService, Translation } from '../../../core/services/i18n.service';
-import { CartItem, CreateOrderRequest } from '../../../core/models/models';
+import { CartItem } from '../../../core/models/models';
 
 @Component({
     selector: 'app-cart',
@@ -20,7 +20,7 @@ export class CartComponent implements OnInit {
 
     constructor(
         private cartService: CartService,
-        private apiService: ApiService,
+        private orderService: OrderService,
         private i18n: I18nService,
         private dialogRef: MatDialogRef<CartComponent>,
         private snackBar: MatSnackBar,
@@ -52,36 +52,47 @@ export class CartComponent implements OnInit {
 
     getImageUrl(item: CartItem): string {
         const product = item.product;
-        if (!product.imageUrl) return 'assets/placeholder.png';
-        if (product.imageUrl.startsWith('http')) return product.imageUrl;
-        return `http://localhost:5000${product.imageUrl}`;
+        // Use imageDataUrl from IndexedDB (Base64 encoded)
+        if (product.imageDataUrl) {
+            return product.imageDataUrl;
+        }
+        return 'assets/placeholder.png';
     }
 
-    checkout() {
+    async checkout() {
         if (this.cartItems.length === 0) return;
 
         this.loading = true;
 
-        const orderRequest: CreateOrderRequest = {
-            items: this.cartItems.map(item => ({
-                productId: item.product._id,
-                quantity: item.quantity
-            }))
-        };
+        try {
+            // Create order in OrderService (saves to IndexedDB)
+            const order = await this.orderService.createOrder({
+                items: this.cartItems.map(item => ({
+                    productId: item.product.id || item.product._id || '',
+                    productNameAr: item.product.nameAr,
+                    productNameEn: item.product.nameEn,
+                    quantity: item.quantity,
+                    price: item.product.price,
+                    subtotal: item.product.price * item.quantity
+                })),
+                totalAmount: this.total
+            });
 
-        this.apiService.createOrder(orderRequest).subscribe({
-            next: (response) => {
-                this.cartService.clearCart();
-                this.dialogRef.close();
-                this.loading = false;
-                this.router.navigate(['/menu/success'], {
-                    queryParams: { order: JSON.stringify(response.data) }
-                });
-            },
-            error: (err) => {
-                this.loading = false;
-                this.snackBar.open(this.t.orderError, this.t.close, { duration: 3000 });
-            }
-        });
+            console.log('Order created from cart:', order);
+
+            // Clear cart and close dialog
+            this.cartService.clearCart();
+            this.dialogRef.close();
+            this.loading = false;
+
+            // Navigate to success page
+            this.router.navigate(['/menu/success'], {
+                queryParams: { order: JSON.stringify(order) }
+            });
+        } catch (error) {
+            console.error('Failed to create order:', error);
+            this.loading = false;
+            this.snackBar.open(this.t.error || 'Failed to create order', this.t.close, { duration: 3000 });
+        }
     }
 }

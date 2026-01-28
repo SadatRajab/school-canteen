@@ -1,18 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { I18nService, Translation } from '../../core/services/i18n.service';
-import { ApiService } from '../../core/services/api.service';
 import { CartService } from '../../core/services/cart.service';
+import { ProductService } from '../../core/services/product.service';
+import { OrderService } from '../../core/services/order.service';
 import { Product, CartItem } from '../../core/models/models';
 import { CartComponent } from './cart/cart.component';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-menu',
     templateUrl: './menu.component.html',
     styleUrls: ['./menu.component.scss']
 })
-export class MenuComponent implements OnInit {
+export class MenuComponent implements OnInit, OnDestroy {
     t!: Translation;
     products: Product[] = [];
     loading = true;
@@ -22,10 +24,12 @@ export class MenuComponent implements OnInit {
     cartItems: CartItem[] = [];
     productQuantities: Map<string, number> = new Map();
     currentLang: string = 'en';
+    private subscription?: Subscription;
 
     constructor(
-        private apiService: ApiService,
+        private productService: ProductService,
         private cartService: CartService,
+        private orderService: OrderService,
         private i18n: I18nService,
         private dialog: MatDialog,
         private router: Router
@@ -44,25 +48,26 @@ export class MenuComponent implements OnInit {
             // Update product quantities map
             this.productQuantities.clear();
             items.forEach(item => {
-                this.productQuantities.set(item.product._id, item.quantity);
+                this.productQuantities.set(item.product.id, item.quantity);
             });
         });
 
-        this.loadProducts();
-    }
-
-    loadProducts() {
-        this.loading = true;
-        this.apiService.getProducts(undefined, true).subscribe({
-            next: (response) => {
-                this.products = response.data;
+        // Subscribe to available products from ProductService
+        this.subscription = this.productService.products$.subscribe({
+            next: (allProducts) => {
+                // Only show available products in menu
+                this.products = allProducts.filter(p => p.available);
                 this.loading = false;
             },
-            error: (err: any) => {
+            error: () => {
                 this.error = this.t.error;
                 this.loading = false;
             }
         });
+    }
+
+    ngOnDestroy() {
+        this.subscription?.unsubscribe();
     }
 
     getProductName(product: Product | CartItem): string {
@@ -75,7 +80,7 @@ export class MenuComponent implements OnInit {
     }
 
     getProductQuantity(product: Product): number {
-        return this.productQuantities.get(product._id) || 0;
+        return this.productQuantities.get(product.id) || 0;
     }
 
     increaseQuantity(product: Product) {
@@ -86,7 +91,7 @@ export class MenuComponent implements OnInit {
     decreaseQuantity(product: Product) {
         const currentQty = this.getProductQuantity(product);
         if (currentQty > 0) {
-            this.cartService.updateQuantity(product._id, currentQty - 1);
+            this.cartService.updateQuantity(product.id, currentQty - 1);
         }
     }
 
@@ -98,37 +103,46 @@ export class MenuComponent implements OnInit {
         this.cartService.removeFromCart(productId);
     }
 
-    checkout() {
+    async checkout() {
+        if (this.cartItems.length === 0) return;
+
         this.loading = true;
-        const items = this.cartItems.map(item => ({
-            productId: item.product._id,
-            quantity: item.quantity
-        }));
 
-        console.log('Creating order with items:', items);
+        try {
+            // Create order in OrderService (saves to IndexedDB)
+            const order = await this.orderService.createOrder({
+                items: this.cartItems.map(item => ({
+                    productId: item.product.id || '',
+                    productNameAr: item.product.nameAr,
+                    productNameEn: item.product.nameEn,
+                    quantity: item.quantity,
+                    price: item.product.price,
+                    subtotal: item.product.price * item.quantity
+                })),
+                totalAmount: this.total
+            });
 
-        this.apiService.createOrder({ items }).subscribe({
-            next: (response) => {
-                console.log('Order created successfully:', response);
-                this.cartService.clearCart();
-                this.loading = false;
-                // Navigate using Router with query params
-                this.router.navigate(['/menu/success'], {
-                    queryParams: {
-                        order: JSON.stringify(response.data)
-                    }
-                }).then(() => {
-                    console.log('Navigation to success page completed');
-                }).catch(err => {
-                    console.error('Navigation error:', err);
-                });
-            },
-            error: (err: any) => {
-                console.error('Order creation error:', err);
-                alert(this.t.error || 'Error placing order');
-                this.loading = false;
-            }
-        });
+            console.log('Order created and saved:', order);
+
+            // Clear cart
+            this.cartService.clearCart();
+            this.loading = false;
+
+            // Navigate to success page with order data
+            this.router.navigate(['/menu/success'], {
+                queryParams: {
+                    order: JSON.stringify(order)
+                }
+            }).then(() => {
+                console.log('Navigation to success page completed');
+            }).catch(err => {
+                console.error('Navigation error:', err);
+            });
+        } catch (error) {
+            console.error('Failed to create order:', error);
+            this.loading = false;
+            alert('Failed to create order. Please try again.');
+        }
     }
 
     get subtotal(): number {
@@ -162,16 +176,14 @@ export class MenuComponent implements OnInit {
 
     getImageUrl(product: Product | CartItem): string {
         const p = 'product' in product ? product.product : product;
-        if (!p.imageUrl) {
-            console.warn('No imageUrl for product:', p.nameEn);
-            return 'assets/placeholder.png';
+
+        // Use imageDataUrl from IndexedDB (Base64 encoded)
+        if (p.imageDataUrl) {
+            return p.imageDataUrl;
         }
-        if (p.imageUrl.startsWith('http')) {
-            return p.imageUrl;
-        }
-        const fullUrl = `http://localhost:5000${p.imageUrl}`;
-        console.log('Image URL:', fullUrl);
-        return fullUrl;
+
+        console.warn('No image for product:', p.nameEn);
+        return 'assets/placeholder.png';
     }
 
     openCartDialog() {

@@ -10,6 +10,8 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
 
     h2 {
         margin: 0;
@@ -31,6 +33,7 @@
 
 .products-table {
     width: 100%;
+    overflow-x: auto;
 
     .product-image {
         width: 60px;
@@ -66,4 +69,93 @@ th {
 
 td {
     padding: 1rem 0.5rem;
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+    .products-container {
+        padding: 1.5rem;
+    }
+
+    .products-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+
+        table {
+            min-width: 800px;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .products-container {
+        padding: 1rem;
+        border-radius: 0;
+    }
+
+    .actions-bar {
+        flex-direction: column;
+        align-items: stretch;
+
+        h2 {
+            font-size: 1.25rem;
+        }
+
+        button {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+
+    .products-table {
+        .product-image {
+            width: 50px;
+            height: 50px;
+        }
+
+        th,
+        td {
+            padding: 0.75rem 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        button {
+            padding: 0.5rem;
+            min-width: auto;
+
+            mat-icon {
+                margin: 0;
+            }
+
+            span {
+                display: none;
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .products-container {
+        padding: 0.75rem;
+    }
+
+    .actions-bar {
+        h2 {
+            font-size: 1.1rem;
+        }
+    }
+
+    .products-table {
+        .product-image {
+            width: 40px;
+            height: 40px;
+        }
+
+        th,
+        td {
+            padding: 0.5rem 0.25rem;
+            font-size: 0.85rem;
+        }
+    }
 }

@@ -1,9 +1,8 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { interval, Subscription } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
-import { ApiService } from '../../core/services/api.service';
+import { Subscription } from 'rxjs';
+import { OrderService } from '../../core/services/order.service';
 import { I18nService, Translation } from '../../core/services/i18n.service';
-import { Order } from '../../core/models/models';
+import { Order, OrderStatus } from '../../core/models/order.model';
 
 @Component({
     selector: 'app-display',
@@ -15,10 +14,10 @@ export class DisplayComponent implements OnInit, OnDestroy {
     orders: Order[] = [];
     loading = true;
     tvMode = false;
-    private refreshSubscription?: Subscription;
+    private ordersSubscription?: Subscription;
 
     constructor(
-        private apiService: ApiService,
+        private orderService: OrderService,
         private i18n: I18nService
     ) { }
 
@@ -27,38 +26,16 @@ export class DisplayComponent implements OnInit, OnDestroy {
             this.t = this.i18n.getTranslations();
         });
 
-        this.loadOrders();
-        this.startAutoRefresh();
-    }
-
-    ngOnDestroy() {
-        this.refreshSubscription?.unsubscribe();
-    }
-
-    loadOrders() {
-        this.apiService.getTodayOrders().subscribe({
-            next: (response) => {
-                this.orders = response.data
-                    .filter(order => this.shouldDisplayOrder(order))
-                    .sort((a, b) => a.orderNumber - b.orderNumber);
-                this.loading = false;
-            },
-            error: () => {
-                this.loading = false;
-            }
+        this.ordersSubscription = this.orderService.orders$.subscribe(allOrders => {
+            this.orders = allOrders
+                .filter(order => this.shouldDisplayOrder(order))
+                .sort((a, b) => a.orderNumber - b.orderNumber);
+            this.loading = false;
         });
     }
 
-    startAutoRefresh() {
-        this.refreshSubscription = interval(5000)
-            .pipe(switchMap(() => this.apiService.getTodayOrders()))
-            .subscribe({
-                next: (response) => {
-                    this.orders = response.data
-                        .filter(order => this.shouldDisplayOrder(order))
-                        .sort((a, b) => a.orderNumber - b.orderNumber);
-                }
-            });
+    ngOnDestroy() {
+        this.ordersSubscription?.unsubscribe();
     }
 
     toggleTVMode() {
@@ -71,7 +48,7 @@ export class DisplayComponent implements OnInit, OnDestroy {
 
     shouldDisplayOrder(order: Order): boolean {
         // إذا لم يكن الطلب مسلماً، اعرضه
-        if (order.status !== 'DELIVERED') {
+        if (order.status !== OrderStatus.DELIVERED) {
             return true;
         }
 
@@ -85,9 +62,9 @@ export class DisplayComponent implements OnInit, OnDestroy {
         return diffMins < 1;
     }
 
-    getTimeAgo(dateString: string): { en: string; ar: string } {
+    getTimeAgo(date: Date | string): { en: string; ar: string } {
         const now = new Date();
-        const orderDate = new Date(dateString);
+        const orderDate = new Date(date);
         const diffMs = now.getTime() - orderDate.getTime();
         const diffMins = Math.floor(diffMs / 60000);
         const diffHours = Math.floor(diffMs / 3600000);

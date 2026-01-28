@@ -1,10 +1,9 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { interval, Subscription } from 'rxjs';
-import { switchMap } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ApiService } from '../../core/services/api.service';
+import { OrderService } from '../../core/services/order.service';
 import { I18nService, Translation } from '../../core/services/i18n.service';
-import { KitchenOrder } from '../../core/models/models';
+import { Order, OrderStatus } from '../../core/models/order.model';
 
 @Component({
     selector: 'app-kitchen',
@@ -13,15 +12,15 @@ import { KitchenOrder } from '../../core/models/models';
 })
 export class KitchenComponent implements OnInit, OnDestroy {
     t!: Translation;
-    orders: KitchenOrder[] = [];
+    orders: Order[] = [];
     loading = true;
     tvMode = true; // Default to TV mode for kitchen
     processingOrders = new Set<string>();
-    private refreshSubscription?: Subscription;
+    private ordersSubscription?: Subscription;
     currentLang: string = 'ar';
 
     constructor(
-        private apiService: ApiService,
+        private orderService: OrderService,
         private i18n: I18nService,
         private snackBar: MatSnackBar
     ) { }
@@ -32,125 +31,50 @@ export class KitchenComponent implements OnInit, OnDestroy {
             this.currentLang = this.i18n.getCurrentLang();
         });
 
-        this.loadOrders();
-        this.startAutoRefresh();
+        // Subscribe to orders from OrderService
+        this.ordersSubscription = this.orderService.orders$.subscribe(allOrders => {
+            // Filter out delivered orders and sort by order number
+            this.orders = allOrders
+                .filter(order => order.status !== OrderStatus.DELIVERED)
+                .sort((a, b) => a.orderNumber - b.orderNumber);
+            this.loading = false;
+        });
     }
 
     ngOnDestroy() {
-        this.refreshSubscription?.unsubscribe();
+        this.ordersSubscription?.unsubscribe();
     }
 
-    loadOrders() {
-        this.apiService.getKitchenTodayOrders().subscribe({
-            next: (response) => {
-                console.log('Kitchen orders response:', response);
-                console.log('Kitchen orders data:', response.data);
-                this.orders = response.data
-                    .filter(order => order.status !== 'DELIVERED')
-                    .sort((a, b) => a.orderNumber - b.orderNumber);
-                console.log('Filtered orders:', this.orders);
-                this.loading = false;
-            },
-            error: () => {
-                this.loading = false;
-            }
-        });
-    }
+    async startPreparing(order: Order) {
+        if (this.processingOrders.has(order.id)) return;
 
-    startAutoRefresh() {
-        this.refreshSubscription = interval(3000) // 3 seconds for kitchen
-            .pipe(switchMap(() => this.apiService.getKitchenTodayOrders()))
-            .subscribe({
-                next: (response) => {
-                    this.orders = response.data
-                        .filter(order => order.status !== 'DELIVERED')
-                        .sort((a, b) => a.orderNumber - b.orderNumber);
-                }
-            });
-    }
+        this.processingOrders.add(order.id);
 
-    startPreparing(order: KitchenOrder) {
-        const orderId = order.orderId || order._id;
-        if (!orderId || this.processingOrders.has(orderId)) return;
-
-        this.processingOrders.add(orderId);
-
-        this.apiService.startPreparingOrder(orderId).subscribe({
-            next: () => {
-                this.processingOrders.delete(orderId);
-                this.snackBar.open(this.t.preparingStarted, this.t.close, { duration: 2000 });
-                this.loadOrders();
-            },
-            error: () => {
-                this.processingOrders.delete(orderId);
-                this.snackBar.open(this.t.error, this.t.close, { duration: 3000 });
-            }
-        });
-    }
-
-    markDelivered(order: KitchenOrder) {
-        const orderId = order.orderId || order._id;
-        console.log('markDelivered called:', { order, orderId, hasOrderId: !!orderId });
-
-        if (!orderId) {
-            console.log('Blocked: No orderId');
-            return;
+        try {
+            await this.orderService.updateOrderStatus(order.id, OrderStatus.PREPARING);
+            this.snackBar.open(this.t.preparingStarted || 'Started preparing', this.t.close, { duration: 2000 });
+            this.processingOrders.delete(order.id);
+        } catch (error) {
+            console.error('Failed to start preparing:', error);
+            this.processingOrders.delete(order.id);
+            this.snackBar.open(this.t.error || 'Error', this.t.close, { duration: 3000 });
         }
-
-        if (this.processingOrders.has(orderId)) {
-            console.log('Blocked: Already processing');
-            return;
-        }
-
-        this.processingOrders.add(orderId);
-        console.log('Calling API to mark delivered:', orderId);
-
-        this.apiService.markOrderDelivered(orderId).subscribe({
-            next: () => {
-                console.log('Successfully marked as delivered');
-                this.processingOrders.delete(orderId);
-                this.snackBar.open(this.t.orderDelivered, this.t.close, { duration: 2000 });
-                this.loadOrders();
-            },
-            error: (err) => {
-                console.error('Error marking as delivered:', err);
-                this.processingOrders.delete(orderId);
-                this.snackBar.open(this.t.error, this.t.close, { duration: 3000 });
-            }
-        });
     }
 
-    markNotDelivered(order: KitchenOrder) {
-        const orderId = order.orderId || order._id;
-        console.log('markNotDelivered called:', { order, orderId, hasOrderId: !!orderId });
+    async markDelivered(order: Order) {
+        if (this.processingOrders.has(order.id)) return;
 
-        if (!orderId) {
-            console.log('Blocked: No orderId');
-            return;
+        this.processingOrders.add(order.id);
+
+        try {
+            await this.orderService.updateOrderStatus(order.id, OrderStatus.DELIVERED);
+            this.snackBar.open(this.t.orderDelivered || 'Order delivered', this.t.close, { duration: 2000 });
+            this.processingOrders.delete(order.id);
+        } catch (error) {
+            console.error('Failed to mark as delivered:', error);
+            this.processingOrders.delete(order.id);
+            this.snackBar.open(this.t.error || 'Error', this.t.close, { duration: 3000 });
         }
-
-        if (this.processingOrders.has(orderId)) {
-            console.log('Blocked: Already processing');
-            return;
-        }
-
-        this.processingOrders.add(orderId);
-        console.log('Calling API to cancel order:', orderId);
-
-        // يمكنك تغيير الحالة لـ CANCELLED أو حذف الطلب
-        this.apiService.cancelOrder(orderId).subscribe({
-            next: () => {
-                console.log('Successfully cancelled order');
-                this.processingOrders.delete(orderId);
-                this.snackBar.open('تم إلغاء الطلب', this.t.close, { duration: 2000 });
-                this.loadOrders();
-            },
-            error: (err) => {
-                console.error('Error cancelling order:', err);
-                this.processingOrders.delete(orderId);
-                this.snackBar.open(this.t.error, this.t.close, { duration: 3000 });
-            }
-        });
     }
 
     getItemName(item: any): string {
@@ -159,10 +83,6 @@ export class KitchenComponent implements OnInit, OnDestroy {
 
     getStatusClass(status: string): string {
         return `status-${status.toLowerCase()}`;
-    }
-
-    getOrderId(order: KitchenOrder): string {
-        return order.orderId || order._id || '';
     }
 
     isProcessing(orderId: string): boolean {

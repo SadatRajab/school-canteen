@@ -355,6 +355,20 @@
 }
 
 // Responsive
+@media (max-width: 1024px) {
+    .content-container {
+        padding: 1.5rem;
+    }
+
+    .top-header {
+        padding: 1rem 1.5rem;
+    }
+
+    .kpi-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
 @media (max-width: 768px) {
     .admin-layout {
         flex-direction: column;
@@ -365,26 +379,166 @@
         height: auto;
         border-right: none;
         border-bottom: 1px solid #e2e8f0;
+        padding: 0.75rem;
+    }
+
+    .branding {
+        .brand-info {
+            .brand-title {
+                font-size: 0.9rem;
+            }
+
+            .brand-subtitle {
+                font-size: 9px;
+            }
+        }
     }
 
     .nav-links {
         flex-direction: row;
         overflow-x: auto;
+        padding-bottom: 0.5rem;
+
+        .nav-item {
+            flex-shrink: 0;
+            padding: 0.5rem;
+            font-size: 0.8rem;
+
+            span {
+                display: none;
+            }
+
+            mat-icon {
+                font-size: 20px;
+                width: 20px;
+                height: 20px;
+            }
+        }
     }
 
     .sidebar-footer {
         display: none;
     }
 
+    .top-header {
+        padding: 1rem;
+
+        .page-title {
+            font-size: 1.1rem !important;
+        }
+
+        .header-right {
+            gap: 0.5rem;
+
+            .lang-toggle {
+                padding: 0.4rem 0.75rem;
+                font-size: 0.8rem;
+            }
+        }
+    }
+
     .content-container {
         padding: 1rem;
     }
 
-    .page-heading h1 {
-        font-size: 1.75rem;
+    .page-heading {
+        h1 {
+            font-size: 1.75rem;
+        }
+
+        p {
+            font-size: 1rem;
+        }
     }
 
     .kpi-grid {
         grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .kpi-card {
+        padding: 1.25rem;
+
+        .kpi-value {
+            font-size: 1.5rem;
+        }
+    }
+
+    .alert-banner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .sidebar {
+        padding: 0.5rem;
+    }
+
+    .branding {
+        gap: 0.5rem;
+        padding: 0.25rem;
+
+        .logo-container {
+            padding: 0.4rem;
+
+            .logo-icon {
+                font-size: 20px;
+                width: 20px;
+                height: 20px;
+            }
+        }
+    }
+
+    .top-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+
+        .header-right {
+            width: 100%;
+            justify-content: flex-end;
+        }
+    }
+
+    .content-container {
+        padding: 0.75rem;
+    }
+
+    .page-heading {
+        h1 {
+            font-size: 1.5rem;
+        }
+
+        p {
+            font-size: 0.9rem;
+        }
+    }
+
+    .kpi-card {
+        padding: 1rem;
+
+        .kpi-header {
+            .kpi-label {
+                font-size: 0.75rem;
+            }
+        }
+
+        .kpi-value {
+            font-size: 1.35rem;
+        }
+
+        .kpi-trend {
+            font-size: 0.75rem;
+        }
+    }
+
+    .recent-orders-section {
+        .section-header {
+            h2 {
+                font-size: 1.25rem;
+            }
+        }
     }
 }

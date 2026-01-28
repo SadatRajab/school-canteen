@@ -10,6 +10,8 @@
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
 
     h2 {
         margin: 0;
@@ -29,6 +31,7 @@
 
 .orders-table {
     width: 100%;
+    overflow-x: auto;
 
     .queue-badge {
         display: inline-block;
@@ -85,4 +88,101 @@ th {
 
 td {
     padding: 1rem 0.5rem;
+}
+
+// Responsive Design
+@media (max-width: 1024px) {
+    .orders-container {
+        padding: 1.5rem;
+    }
+
+    .orders-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+
+        table {
+            min-width: 900px;
+        }
+    }
+}
+
+@media (max-width: 768px) {
+    .orders-container {
+        padding: 1rem;
+        border-radius: 0;
+    }
+
+    .actions-bar {
+        flex-direction: column;
+        align-items: stretch;
+
+        h2 {
+            font-size: 1.25rem;
+        }
+
+        mat-form-field {
+            width: 100%;
+        }
+    }
+
+    .orders-table {
+        .queue-badge {
+            padding: 0.4rem 0.75rem;
+            font-size: 1rem;
+        }
+
+        .items-list {
+            .item-row {
+                font-size: 0.85rem;
+            }
+        }
+
+        th,
+        td {
+            padding: 0.75rem 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        button {
+            padding: 0.5rem;
+            font-size: 0.85rem;
+
+            mat-icon {
+                font-size: 18px;
+                width: 18px;
+                height: 18px;
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .orders-container {
+        padding: 0.75rem;
+    }
+
+    .actions-bar {
+        h2 {
+            font-size: 1.1rem;
+        }
+    }
+
+    .orders-table {
+        .queue-badge {
+            padding: 0.3rem 0.6rem;
+            font-size: 0.9rem;
+        }
+
+        th,
+        td {
+            padding: 0.5rem 0.25rem;
+            font-size: 0.8rem;
+        }
+
+        mat-chip {
+            font-size: 0.75rem;
+            min-height: 24px;
+        }
+    }
 }

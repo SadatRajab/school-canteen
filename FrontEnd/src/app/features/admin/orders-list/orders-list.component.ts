@@ -1,15 +1,16 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, OnDestroy, Input } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { ApiService } from '../../../core/services/api.service';
+import { OrderService } from '../../../core/services/order.service';
 import { I18nService, Translation } from '../../../core/services/i18n.service';
-import { Order } from '../../../core/models/models';
+import { Order, OrderStatus } from '../../../core/models/order.model';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-orders-list',
     templateUrl: './orders-list.component.html',
     styleUrls: ['./orders-list.component.scss']
 })
-export class OrdersListComponent implements OnInit {
+export class OrdersListComponent implements OnInit, OnDestroy {
     @Input() compact = false;
 
     t!: Translation;
@@ -18,9 +19,10 @@ export class OrdersListComponent implements OnInit {
     loading = true;
     statusFilter = 'all';
     processingOrders = new Set<string>();
+    private ordersSubscription?: Subscription;
 
     constructor(
-        private apiService: ApiService,
+        private orderService: OrderService,
         private i18n: I18nService,
         private snackBar: MatSnackBar
     ) { }
@@ -30,19 +32,14 @@ export class OrdersListComponent implements OnInit {
             this.t = this.i18n.getTranslations();
         });
 
-        this.loadOrders();
+        this.ordersSubscription = this.orderService.orders$.subscribe(allOrders => {
+            this.orders = allOrders.sort((a, b) => b.orderNumber - a.orderNumber);
+            this.loading = false;
+        });
     }
 
-    loadOrders() {
-        this.apiService.getAdminOrders().subscribe({
-            next: (response) => {
-                this.orders = response.data.sort((a, b) => b.orderNumber - a.orderNumber);
-                this.loading = false;
-            },
-            error: () => {
-                this.loading = false;
-            }
-        });
+    ngOnDestroy() {
+        this.ordersSubscription?.unsubscribe();
     }
 
     get filteredOrders(): Order[] {
@@ -56,22 +53,19 @@ export class OrdersListComponent implements OnInit {
         return this.i18n.getBilingualField(item, 'nameSnapshot');
     }
 
-    deliverOrder(order: Order) {
-        if (this.processingOrders.has(order._id)) return;
+    async deliverOrder(order: Order) {
+        if (this.processingOrders.has(order.id)) return;
 
-        this.processingOrders.add(order._id);
+        this.processingOrders.add(order.id);
 
-        this.apiService.deliverOrder(order._id).subscribe({
-            next: () => {
-                this.processingOrders.delete(order._id);
-                this.snackBar.open(this.t.orderDelivered, this.t.close, { duration: 2000 });
-                this.loadOrders();
-            },
-            error: () => {
-                this.processingOrders.delete(order._id);
-                this.snackBar.open(this.t.error, this.t.close, { duration: 3000 });
-            }
-        });
+        try {
+            await this.orderService.updateOrderStatus(order.id, OrderStatus.DELIVERED);
+            this.processingOrders.delete(order.id);
+            this.snackBar.open(this.t.orderDelivered || 'Order delivered', this.t.close, { duration: 2000 });
+        } catch (error) {
+            this.processingOrders.delete(order.id);
+            this.snackBar.open(this.t.error || 'Error', this.t.close, { duration: 3000 });
+        }
     }
 
     isProcessing(orderId: string): boolean {

@@ -1,15 +1,16 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../core/services/auth.service';
 import { I18nService, Translation } from '../../../core/services/i18n.service';
-import { ApiService } from '../../../core/services/api.service';
+import { OrderService } from '../../../core/services/order.service';
+import { Subscription } from 'rxjs';
 
 @Component({
     selector: 'app-admin-dashboard',
     templateUrl: './admin-dashboard.component.html',
     styleUrls: ['./admin-dashboard.component.scss']
 })
-export class AdminDashboardComponent implements OnInit {
+export class AdminDashboardComponent implements OnInit, OnDestroy {
     t!: Translation;
     selectedTab = 0;
     currentLang = 'ar';
@@ -18,12 +19,13 @@ export class AdminDashboardComponent implements OnInit {
     todayProfit = 0;
     totalOrders = 0;
     pendingOrders = 0;
+    private ordersSubscription?: Subscription;
 
     constructor(
         private authService: AuthService,
         private i18n: I18nService,
         private router: Router,
-        private api: ApiService
+        private orderService: OrderService
     ) { }
 
     ngOnInit() {
@@ -35,24 +37,15 @@ export class AdminDashboardComponent implements OnInit {
         this.loadKPIData();
     }
 
-    loadKPIData() {
-        // Load today's profit
-        this.api.getTodayProfit().subscribe({
-            next: (response) => {
-                this.todayProfit = response.data?.totalProfit || response.data?.profit || 0;
-            },
-            error: (err: any) => console.error('Error loading profit:', err)
-        });
+    ngOnDestroy() {
+        this.ordersSubscription?.unsubscribe();
+    }
 
-        // Load total orders today
-        this.api.getTodayOrders().subscribe({
-            next: (response) => {
-                this.totalOrders = response.data?.length || 0;
-                this.pendingOrders = response.data?.filter((o) =>
-                    o.status === 'PENDING' || o.status === 'PREPARING'
-                ).length || 0;
-            },
-            error: (err: any) => console.error('Error loading orders:', err)
+    loadKPIData() {
+        this.ordersSubscription = this.orderService.orders$.subscribe(() => {
+            this.todayProfit = this.orderService.getTodayRevenue();
+            this.totalOrders = this.orderService.getTodayOrders().length;
+            this.pendingOrders = this.orderService.getPendingOrdersCount();
         });
     }
 

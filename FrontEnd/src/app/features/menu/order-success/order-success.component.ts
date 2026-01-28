@@ -45,24 +45,15 @@ export class OrderSuccessComponent implements OnInit {
     initOrderData() {
         if (!this.order) return;
 
-        // Generate order number - use orderNumber if exists, otherwise create from _id
-        if (this.order.orderNumber) {
-            this.orderNumber = this.order.orderNumber;
-        } else if (this.order._id) {
-            // Format: A-XXX where XXX is last 3 chars of ID in uppercase
-            const lastThree = this.order._id.slice(-3).toUpperCase();
-            this.orderNumber = 'A-' + lastThree;
-        } else {
-            // Fallback to random number
-            this.orderNumber = 'A-' + Math.floor(Math.random() * 999).toString().padStart(3, '0');
-        }
+        // Use sequential order number
+        this.orderNumber = this.order.orderNumber?.toString().padStart(3, '0') || '001';
 
         const date = new Date(this.order.createdAt || Date.now());
         this.orderDate = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
         this.orderTime = date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
 
         // Get total amount
-        this.totalAmount = this.order.totalAmount || 0;
+        this.totalAmount = this.order.totalAmount || this.order.total || 0;
     }
 
     backToMenu() {

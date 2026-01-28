@@ -3,8 +3,7 @@
     <div class="navbar">
         <div class="navbar-content">
             <div class="navbar-left">
-                <img src="assets/images/school-logo.png" alt="School Logo" class="logo-image">
-                <h1 class="app-title">School Canteen</h1>
+                <h1 class="app-title">{{ t.appName }}</h1>
                 <p class="portal-subtitle">KITCHEN PORTAL</p>
             </div>
 
@@ -42,8 +41,8 @@
                 <div *ngFor="let item of order.items" class="item-row">
                     <span class="item-quantity">{{ item.quantity }}x</span>
                     <div class="item-names">
-                        <div class="item-name-en">{{ item.nameSnapshotEn }}</div>
-                        <div class="item-name-ar">{{ item.nameSnapshotAr }}</div>
+                        <div class="item-name-en">{{ item.productNameEn }}</div>
+                        <div class="item-name-ar">{{ item.productNameAr }}</div>
                     </div>
                 </div>
             </div>
@@ -54,17 +53,17 @@
             </div>
 
             <button *ngIf="order.status === 'PENDING'" mat-raised-button class="ready-button"
-                (click)="startPreparing(order)" [disabled]="isProcessing(getOrderId(order))">
-                <mat-icon *ngIf="!isProcessing(getOrderId(order))">check_circle</mat-icon>
-                <mat-spinner *ngIf="isProcessing(getOrderId(order))" diameter="20"></mat-spinner>
-                <span *ngIf="!isProcessing(getOrderId(order))">{{ t.startPreparing }}</span>
+                (click)="startPreparing(order)" [disabled]="isProcessing(order.id)">
+                <mat-icon *ngIf="!isProcessing(order.id)">check_circle</mat-icon>
+                <mat-spinner *ngIf="isProcessing(order.id)" diameter="20"></mat-spinner>
+                <span *ngIf="!isProcessing(order.id)">{{ t.startPreparing }}</span>
             </button>
 
             <button *ngIf="order.status === 'PREPARING'" mat-raised-button class="ready-button"
-                (click)="markDelivered(order)" [disabled]="isProcessing(getOrderId(order))">
-                <mat-icon *ngIf="!isProcessing(getOrderId(order))">check_circle</mat-icon>
-                <mat-spinner *ngIf="isProcessing(getOrderId(order))" diameter="20"></mat-spinner>
-                <span *ngIf="!isProcessing(getOrderId(order))">{{ t.markDelivered }}</span>
+                (click)="markDelivered(order)" [disabled]="isProcessing(order.id)">
+                <mat-icon *ngIf="!isProcessing(order.id)">check_circle</mat-icon>
+                <mat-spinner *ngIf="isProcessing(order.id)" diameter="20"></mat-spinner>
+                <span *ngIf="!isProcessing(order.id)">{{ t.markDelivered }}</span>
             </button>
         </div>
     </div>

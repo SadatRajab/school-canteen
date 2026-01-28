@@ -378,7 +378,7 @@ export class I18nService {
         },
         ar: {
             // Common
-            appName: 'كافتيريا المدرسة',
+            appName: 'مقصف المدرسة',
             language: 'اللغة',
             english: 'English',
             arabic: 'العربية',
