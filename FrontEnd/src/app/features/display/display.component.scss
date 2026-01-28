@@ -81,12 +81,12 @@
         }
     }
 
-    &.status-preparing {
+    &.status-ready {
         background: linear-gradient(135deg, #16697a 0%, #1a7a8a 100%);
         border-color: #1a7a8a;
 
         .status-text {
-            color: #4fc3f7;
+            color: #fff;
         }
     }
 
