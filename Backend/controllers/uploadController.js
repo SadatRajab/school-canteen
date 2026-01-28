@@ -1,7 +1,13 @@
 const multer = require('multer');
 const sharp = require('sharp');
-const path = require('path');
-const fs = require('fs').promises;
+const cloudinary = require('cloudinary').v2;
+
+// Configure Cloudinary
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET
+});
 
 // Configure multer for memory storage
 const storage = multer.memoryStorage();
@@ -39,34 +45,44 @@ exports.uploadImage = async (req, res, next) => {
             });
         }
 
-        // Create uploads directory if it doesn't exist
-        const uploadsDir = path.join(__dirname, '..', 'uploads');
-        try {
-            await fs.access(uploadsDir);
-        } catch {
-            await fs.mkdir(uploadsDir, { recursive: true });
-        }
-
-        // Generate unique filename
-        const filename = `${Date.now()}-${Math.round(Math.random() * 1E9)}.jpg`;
-        const filepath = path.join(uploadsDir, filename);
-
-        // Process image with sharp
-        await sharp(req.file.buffer)
+        // Optimize image with sharp
+        const optimizedBuffer = await sharp(req.file.buffer)
             .resize(800, 800, {
                 fit: 'inside',
                 withoutEnlargement: true
             })
             .jpeg({ quality: 85 })
-            .toFile(filepath);
+            .toBuffer();
 
-        // Return URL
-        const imageUrl = `/uploads/${filename}`;
+        // Upload to Cloudinary
+        const uploadStream = cloudinary.uploader.upload_stream(
+            {
+                folder: 'school-canteen',
+                resource_type: 'image'
+            },
+            (error, result) => {
+                if (error) {
+                    return res.status(500).json({
+                        success: false,
+                        message: 'Failed to upload image to Cloudinary',
+                        error: error.message
+                    });
+                }
 
-        res.status(200).json({
-            success: true,
-            imageUrl
-        });
+                res.status(200).json({
+                    success: true,
+                    imageUrl: result.secure_url
+                });
+            }
+        );
+
+        // Pipe the buffer to Cloudinary
+        const { Readable } = require('stream');
+        const bufferStream = new Readable();
+        bufferStream.push(optimizedBuffer);
+        bufferStream.push(null);
+        bufferStream.pipe(uploadStream);
+
     } catch (error) {
         next(error);
     }
