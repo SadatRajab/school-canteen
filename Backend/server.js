@@ -28,8 +28,8 @@ app.use(mongoSanitize());
 
 // ========== CORS Configuration ==========
 app.use(cors({
-    origin: process.env.CORS_ORIGIN || '*',
-    credentials: true
+    origin: '*',
+    credentials: false
 }));
 
 // ========== Body Parser ==========
