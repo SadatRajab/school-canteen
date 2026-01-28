@@ -95,7 +95,7 @@ export interface Translation {
     orderTime: string;
     status: string;
     pending: string;
-    preparing: string;
+    ready: string;
     delivered: string;
     cashOnly: string;
     paymentMethod: string;
@@ -114,7 +114,6 @@ export interface Translation {
     // Kitchen
     kitchen: string;
     markReady: string;
-    ready: string;
     noOrdersYet: string;
     refreshing: string;
 
@@ -310,7 +309,6 @@ export class I18nService {
             // Kitchen
             kitchen: 'Kitchen',
             markReady: 'Mark Ready',
-            ready: 'Ready for Pickup',
             noOrdersYet: 'No orders yet',
             refreshing: 'Refreshing...',
 
@@ -496,7 +494,6 @@ export class I18nService {
             // Kitchen
             kitchen: 'المطبخ',
             markReady: 'تأكيد الجاهزية',
-            ready: 'جاهز للاستلام',
             noOrdersYet: 'لا توجد طلبات بعد',
             refreshing: 'جاري التحديث...',
 
