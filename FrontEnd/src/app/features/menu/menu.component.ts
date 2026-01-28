@@ -6,6 +6,7 @@ import { ApiService } from '../../core/services/api.service';
 import { CartService } from '../../core/services/cart.service';
 import { Product, CartItem } from '../../core/models/models';
 import { CartComponent } from './cart/cart.component';
+import { environment } from '../../../environments/environment';
 
 @Component({
     selector: 'app-menu',
@@ -169,7 +170,7 @@ export class MenuComponent implements OnInit {
         if (p.imageUrl.startsWith('http')) {
             return p.imageUrl;
         }
-        const fullUrl = `http://localhost:5000${p.imageUrl}`;
+        const fullUrl = `${environment.uploadsUrl}${p.imageUrl}`;
         console.log('Image URL:', fullUrl);
         return fullUrl;
     }

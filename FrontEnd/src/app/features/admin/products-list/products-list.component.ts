@@ -5,6 +5,7 @@ import { ApiService } from '../../../core/services/api.service';
 import { I18nService, Translation } from '../../../core/services/i18n.service';
 import { Product } from '../../../core/models/models';
 import { ProductFormComponent } from '../product-form/product-form.component';
+import { environment } from '../../../../environments/environment';
 
 @Component({
     selector: 'app-products-list',
@@ -93,6 +94,6 @@ export class ProductsListComponent implements OnInit {
     getImageUrl(product: Product): string {
         if (!product.imageUrl) return 'assets/placeholder.jpg';
         if (product.imageUrl.startsWith('http')) return product.imageUrl;
-        return `http://localhost:5000${product.imageUrl}`;
+        return `${environment.uploadsUrl}${product.imageUrl}`;
     }
 }

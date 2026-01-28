@@ -24,10 +24,6 @@
                     <mat-icon>receipt_long</mat-icon>
                     <span>{{ t.orders }}</span>
                 </a>
-                <a class="nav-item" [class.active]="selectedTab === 3" (click)="selectedTab = 3">
-                    <mat-icon>payments</mat-icon>
-                    <span>{{ t.profit }}</span>
-                </a>
             </nav>
         </div>
 
@@ -65,18 +61,6 @@
 
             <!-- KPI Stats -->
             <div class="kpi-grid">
-                <div class="kpi-card">
-                    <div class="kpi-header">
-                        <p class="kpi-label">{{ t.todayRevenue }}</p>
-                        <mat-icon class="kpi-icon">payments</mat-icon>
-                    </div>
-                    <p class="kpi-value">{{ todayProfit || 0 }} {{ t.currency }}</p>
-                    <div class="kpi-trend">
-                        <mat-icon>trending_up</mat-icon>
-                        <span>{{ t.revenueToday }}</span>
-                    </div>
-                </div>
-
                 <div class="kpi-card">
                     <div class="kpi-header">
                         <p class="kpi-label">{{ t.totalOrders }}</p>
@@ -130,10 +114,6 @@
 
         <div class="content-container" *ngIf="selectedTab === 2">
             <app-orders-list></app-orders-list>
-        </div>
-
-        <div class="content-container" *ngIf="selectedTab === 3">
-            <app-profit-display></app-profit-display>
         </div>
     </main>
 </div>

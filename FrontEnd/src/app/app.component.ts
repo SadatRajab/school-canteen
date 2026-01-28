@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { I18nService, Translation } from './core/services/i18n.service';
 
 @Component({
-    selector: 'app-root',
-    template: `
+  selector: 'app-root',
+  template: `
     <mat-toolbar color="primary" class="no-print">
       <span>{{ t.appName }}</span>
       <span class="spacer"></span>
@@ -31,7 +31,7 @@ import { I18nService, Translation } from './core/services/i18n.service';
       <router-outlet></router-outlet>
     </div>
   `,
-    styles: [`
+  styles: [`
     .spacer {
       flex: 1 1 auto;
     }
@@ -48,13 +48,13 @@ import { I18nService, Translation } from './core/services/i18n.service';
   `]
 })
 export class AppComponent implements OnInit {
-    t!: Translation;
+  t!: Translation;
 
-    constructor(private i18n: I18nService) { }
+  constructor(private i18n: I18nService) { }
 
-    ngOnInit() {
-        this.i18n.lang$.subscribe(() => {
-            this.t = this.i18n.getTranslations();
-        });
-    }
+  ngOnInit() {
+    this.i18n.lang$.subscribe(() => {
+      this.t = this.i18n.getTranslations();
+    });
+  }
 }

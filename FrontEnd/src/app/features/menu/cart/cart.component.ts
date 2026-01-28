@@ -6,6 +6,7 @@ import { CartService } from '../../../core/services/cart.service';
 import { ApiService } from '../../../core/services/api.service';
 import { I18nService, Translation } from '../../../core/services/i18n.service';
 import { CartItem, CreateOrderRequest } from '../../../core/models/models';
+import { environment } from '../../../../environments/environment';
 
 @Component({
     selector: 'app-cart',
@@ -54,7 +55,7 @@ export class CartComponent implements OnInit {
         const product = item.product;
         if (!product.imageUrl) return 'assets/placeholder.png';
         if (product.imageUrl.startsWith('http')) return product.imageUrl;
-        return `http://localhost:5000${product.imageUrl}`;
+        return `${environment.uploadsUrl}${product.imageUrl}`;
     }
 
     checkout() {

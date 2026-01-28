@@ -22,7 +22,6 @@ import { AdminDashboardComponent } from './admin-dashboard/admin-dashboard.compo
 import { ProductsListComponent } from './products-list/products-list.component';
 import { ProductFormComponent } from './product-form/product-form.component';
 import { OrdersListComponent } from './orders-list/orders-list.component';
-import { ProfitDisplayComponent } from './profit-display/profit-display.component';
 import { AuthGuard } from '../../core/guards/auth.guard';
 
 const routes: Routes = [
@@ -41,8 +40,7 @@ const routes: Routes = [
         AdminDashboardComponent,
         ProductsListComponent,
         ProductFormComponent,
-        OrdersListComponent,
-        ProfitDisplayComponent
+        OrdersListComponent
     ],
     imports: [
         CommonModule,

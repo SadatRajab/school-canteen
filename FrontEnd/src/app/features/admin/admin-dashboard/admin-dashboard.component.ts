@@ -15,7 +15,6 @@ export class AdminDashboardComponent implements OnInit {
     currentLang = 'ar';
 
     // KPI Data
-    todayProfit = 0;
     totalOrders = 0;
     pendingOrders = 0;
 
@@ -36,14 +35,6 @@ export class AdminDashboardComponent implements OnInit {
     }
 
     loadKPIData() {
-        // Load today's profit
-        this.api.getTodayProfit().subscribe({
-            next: (response) => {
-                this.todayProfit = response.data?.totalProfit || response.data?.profit || 0;
-            },
-            error: (err: any) => console.error('Error loading profit:', err)
-        });
-
         // Load total orders today
         this.api.getTodayOrders().subscribe({
             next: (response) => {
